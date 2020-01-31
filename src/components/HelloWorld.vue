@@ -20,11 +20,11 @@
     ></textarea>
 
     <label>
-      <Select :list="a.ji"
-              v-if="showRecommend"
-              :selectedIndex="selectedIndex"
-              @onSelect="selectedText"
-      ></Select>
+<!--      <Select :list="a.ji"-->
+<!--              v-if="showRecommend"-->
+<!--              :selectedIndex="selectedIndex"-->
+<!--              @onSelect="selectedText"-->
+<!--      ></Select>-->
       <!--:selectedIndex="selectedIndex"-->
     </label>
   </div>
@@ -121,7 +121,7 @@
           this.inputWord[index].wordIndexInArr = wordIndexInArr
           this.inputWord[index].value = value[0]
         } else {
-          // this.transformedWord[index].value = otherKey
+          // this.sentence[index].value = otherKey
         }
         this.$refs.textarea.focus()
       },

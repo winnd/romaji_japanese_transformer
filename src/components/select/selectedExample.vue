@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Select :list="ji" />
+<!--    <Select :list="ji" />-->
   </div>
 </template>
 
