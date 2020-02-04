@@ -41,7 +41,7 @@
     data () {
       return {
         inputStr                  : 'a shi ji',      // 输入的罗马音 ji
-        cachedWords               : [               // 缓存
+        cachedWords               : [                // 缓存
           {
             wordIndex  : 1,         // 是句中的第几个词
             selectIndex: 0,         // 第几个选项(如选了ji的第2个选项
