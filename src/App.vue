@@ -1,17 +1,24 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.jpg">
-    <router-view/>
+    <img :src="logo" alt="">
+    <router-view />
   </div>
 </template>
 
 <script>
+import logo from './assets/logo.jpg'
+
 export default {
-  name: 'App'
+  components: { logo },
+  setup () {
+    return {
+      logo
+    }
+  },
 }
 </script>
 
-<style>
+<style lang="scss">
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -19,10 +26,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  img {
+    width: 300px;
+    height: 300px;
+  }
 }
 
-#app img{
-  width: 50px;
-  height: 50px;
-}
 </style>

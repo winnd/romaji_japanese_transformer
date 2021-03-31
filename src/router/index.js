@@ -1,15 +1,12 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-// import HelloWorld from '@/components/HelloWorld'
-import Select from '@/components/select/selectedExample'
-import n from '@/components/new/n2_链表版'
+import {createRouter, createWebHistory} from 'vue-router'
 
-Vue.use(Router)
-
-export default new Router({
-  routes: [
-    // {path: '/', name: 'HelloWorld', component: HelloWorld},
-    {path: '/selected', name: 'Selected', component: Select},
-    {path: '/n', name: 'n', component: n}
-  ]
+const router = createRouter({
+    history: createWebHistory(),
+    routes : [
+        {path: '/', component: import('../components/HelloWorld.vue')},
+        {path: '/selected', component: import('../components/select/Select.vue')},
+        {path: '/n', component: import('../components/new/n.vue')},
+    ],
 })
+
+export default router

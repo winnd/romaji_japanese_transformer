@@ -1,39 +1,39 @@
 <template>
   <div class='hello'>
-    <p>
-      <a href="http://www.earth.sinica.edu.tw/webearth-library.../files/JP.htm"
-         target="_blank"
-      >五十音图参考表</a></p>
-    <p class='showWrapper'>
-      <template v-for="(item,index) in sentence">
-        <span :key="index">{{item.transformedWord}}</span>
-      </template>
-    </p>
+<!--    <p>-->
+<!--      <a href="http://www.earth.sinica.edu.tw/webearth-library.../files/JP.htm"-->
+<!--         target="_blank"-->
+<!--      >五十音图参考表</a></p>-->
+<!--    <p class='showWrapper'>-->
+<!--      <template v-for="(item,index) in sentence">-->
+<!--        <span :key="index">{{item.transformedWord}}</span>-->
+<!--      </template>-->
+<!--    </p>-->
 
-    <p>请在下方输入要转换的罗马音并以空格间隔</p>
-    <textarea @input='inputKey'
-              v-model="inputStr"
-              @select="handleSelectText"
-              ref="textarea"
-    ></textarea>
+<!--    <p>请在下方输入要转换的罗马音并以空格间隔</p>-->
+<!--    <textarea @input='inputKey'-->
+<!--              v-model="inputStr"-->
+<!--              @select="handleSelectText"-->
+<!--              ref="textarea"-->
+<!--    ></textarea>-->
 
-    <p>
-      <button @click="change">转片假名</button>
-    </p>
+<!--    <p>-->
+<!--      <button @click="change">转片假名</button>-->
+<!--    </p>-->
 
-    <Select :list="recommendList"
-            :show="showRecommend"
-            @onChoose="handleChoose"
-            :editingWordIndexInSentence="editingWordIndexInSentence"
-    />
-    <!--    @onSelect="selectWord"-->
+<!--    <Select :list="recommendList"-->
+<!--            :show="showRecommend"-->
+<!--            @onChoose="handleChoose"-->
+<!--            :editingWordIndexInSentence="editingWordIndexInSentence"-->
+<!--    />-->
+<!--    &lt;!&ndash;    @onSelect="selectWord"&ndash;&gt;-->
 
   </div>
 </template>
 
 <script>
   import dictionary from '../wordList.json'
-  import Select from '@/components/select/Select'
+  import Select from '../select/Select.vue'
 
   export default {
     name      : 'HelloWorld',
