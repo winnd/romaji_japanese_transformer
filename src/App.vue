@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <img :src="logo" alt="">
-    <router-view />
+    <router-view/>
   </div>
 </template>
 
@@ -9,16 +9,18 @@
 import logo from './assets/logo.jpg'
 
 export default {
-  components: { logo },
+  components: {logo},
   setup () {
     return {
-      logo
+      logo,
     }
   },
 }
 </script>
 
 <style lang="scss">
+@import "./css/default.css";
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -26,6 +28,7 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+
   img {
     width: 300px;
     height: 300px;

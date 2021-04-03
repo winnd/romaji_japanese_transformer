@@ -1,73 +1,29 @@
 <template>
-  <div class='hello'>
-    <p>
-      <a href="http://www.earth.sinica.edu.tw/webearth-library.../files/JP.htm"
-         target="_blank"
-      >五十音图参考表</a></p>
-    <p class='showWrapper'>
-      <template v-for="(item,index) in inputWord">
-        <span>{{ item.value }}</span>
-      </template>
-    </p>
+  <div class="hello">
+    <a href="http://www.earth.sinica.edu.tw/webearth-library.../files/JP.htm" target="_blank">五十音图参考表</a>
+    <div class="output-wrapper">{{ outputStr }}</div>
 
-    <p><label for='transform'>请在下方输入要转换的罗马音并以空格间隔</label></p>
-    <textarea name='input'
-              id='transform'
-              class="textarea"
-              ref="textarea"
-              @input='inputKey'
-              v-model="textAreaStr"
-    ></textarea>
-
-    <label>
-      <!--      <Select :list="a.ji"-->
-      <!--              v-if="showRecommend"-->
-      <!--              :selectedIndex="selectedIndex"-->
-      <!--              @onSelect="selectedText"-->
-      <!--      ></Select>-->
-      <!--:selectedIndex="selectedIndex"-->
-    </label>
+    <p><label for="transform">请在下方输入要转换的罗马音并以空格间隔</label></p>
+    <textarea class="textarea" id="transform" ref="textareaDom" v-model="inputStr" @keyup="doKeyup"></textarea> <label>
+    <SelectMenu v-if="showSelectMenu" :item="katakanaToChoose" @chooseWord="onChooseWord"/>
+  </label>
   </div>
 </template>
 
-<script>
-import dictionary from './wordList.json'
-import Select from './select/Select.vue'
+<script lang="ts">
+import JP_DICT from './wordList.json'
+import SelectMenu from './SelectMenu.vue'
+import { nextTick, ref } from 'vue'
+import { InputWord, RomajiMap } from './type'
 
 export default {
-  name: 'HelloWorld',
-  data () {
-    return {
-      inputWord    : [
-        {
-
-          selected      : false,
-          selectedIndex : '',
-          wordIndexInArr: 0,
-          otherWord     : '',
-        },
-      ],          // 输入内容与对应关系
-      textAreaStr  : '',          // 输入的罗马音 ji
-      selectedIndex: 0,          // 该单词的位置
-      showRecommend: false,       // 显示下拉选框 flag
-      // selectedIndex: 0,          // 需要选择的罗马文的index
-      a: dictionary,
-    }
-  },
-  methods   : {
-    async inputKey (event) {
+  name: '输入区',
+  components: { SelectMenu },
+  methods: {
+    async inputKey(event) {
       const validated = await this.validateWord(event.data)
       if (validated) {
-        console.log(event)
-        this.inputWord = []
         let oldInputWord = this.inputWord.filter(x => x.wordIndexInArr !== undefined)      // 有index的要存下来
-        let textAreaStrArr = this.textAreaStr.trim()
-            .split(' ')                  // 按空格分割为数组
-            .filter(x => { return x !== '' })     // 过滤为空的
-
-        this.inputWord = textAreaStrArr.map(x => {
-          return {key: x}
-        })
 
         oldInputWord.map(x => {
           if (this.inputWord[x.index]) {
@@ -78,9 +34,10 @@ export default {
         })
 
         // var key         = textAreaStrArr[textAreaStrArr.length - 1]   // 最后一个word
-        console.log(this.inputWord)
         this.inputWord.map((x, i) => {
-          if (x.index !== undefined && event.inputType !== 'deleteContentBackward') { return }
+          if (x.index !== undefined && event.inputType !== 'deleteContentBackward') {
+            return
+          }
           if (x.key !== '') {
             switch (Object.prototype.toString.call(this.a[x.key])) {
               case '[object String]':
@@ -102,9 +59,15 @@ export default {
                 this.selectedIndex = x.index
                 return x
               default:
-                if (x.index) { delete x.index }
-                if (x.value) { delete x.value }
-                if (x.wordIndexInArr !== undefined) { delete x.wordIndexInArr }
+                if (x.index) {
+                  delete x.index
+                }
+                if (x.value) {
+                  delete x.value
+                }
+                if (x.wordIndexInArr !== undefined) {
+                  delete x.wordIndexInArr
+                }
                 x.value = this.a[x.key] === undefined ? x.key : x.key
                 this.showRecommend = false
                 return x
@@ -112,10 +75,10 @@ export default {
           }
         })
       } else {
-        console.warning('不可识别的字符')
+        console.warn('不可识别的字符')
       }
     },
-    selectedText (value, index, wordIndexInArr, otherKey) {
+    selectedText(value, index, wordIndexInArr, otherKey) {
       if (value !== undefined) {
         this.showRecommend = false
         this.inputWord[index].wordIndexInArr = wordIndexInArr
@@ -125,7 +88,7 @@ export default {
       }
       this.$refs.textarea.focus()
     },
-    validateWord (str) {
+    validateWord(str) {
       return new Promise((resolve) => {
         switch (str) {
           case  ' ' :
@@ -142,15 +105,112 @@ export default {
       })
     },
   },
-  components: {Select},
+  setup() {
+    const PASS_KEYS = ['Space', 'Backspace']      // 不处理的key
+    const { hiragana: HIRAGANA_DICT, katakana: KATAKANA_DICT } = JP_DICT    // HIRAGANA_DICT: 平假名字典；KATAKANA_DICT: 片假名字典
+    const multipleChooseWord = Object.entries(HIRAGANA_DICT).filter(x => x[1] instanceof Array)   // 有多个选择的罗马音， 如：ji,shi
+    const inputStr = ref('')        // 用户的输入
+    const outputStr = ref('')       // 显示到页面上的内容
+    const textareaDom = ref(null)
+    const showSelectMenu = ref(false) // 是否显示罗马音多选菜单
+    const katakanaToChoose = ref({})    // 待选罗马音
+    let wordsStore: RomajiMap[] = []     // 罗马音映射文本
+    let inputWords: InputWord[] = []
+
+    const doKeyup = (event: KeyboardEvent) => {
+      const keyCode = event.code
+      console.log('输入的键:', keyCode)
+      switch (keyCode) {
+        case 'Space':
+          // 跳过
+          break
+        case '回车+shift':          // todo 换行
+          break
+        default:
+          _continueInput()
+      }
+    }
+
+    const _continueInput = () => {
+      const wordList = inputStr.value   // 当前输入的内容
+          .split(' ')           // 以空格为界进行分割
+          .filter(x => !!x)               // 过滤为空字符串
+
+      // 这是用户输入的文字映射
+      inputWords = wordList.map((item, index) => ({
+        key: item,
+        value: HIRAGANA_DICT[item] || item,
+        wordIndex: index,
+      }))
+
+      // 用户输入的有多个平假名选项的的罗马音
+      const inputtedMultipleChooseRomaji: InputWord[] = inputWords.filter(x => x.value instanceof Array)
+
+      // 未被记录的多选罗马字
+      const unStoreRomajiMap = inputtedMultipleChooseRomaji.filter(x => !wordsStore.find(y => x.wordIndex === y.wordIndexInSentence))
+
+      // 维护 wordsStore 用户对于有多个选项的罗马音选了哪个结果。 如: ji 选了第0个
+      if (inputtedMultipleChooseRomaji.length && unStoreRomajiMap.length) {
+        debugger
+        showSelectMenu.value = true
+        katakanaToChoose.value = unStoreRomajiMap[0]
+        // katakanaToChoose.value = inputtedMultipleChooseRomaji[0]
+      }
+
+      outputStr.value = _getOutPutStr(inputWords)
+    }
+
+    const _getOutPutStr = (katakanaWords: InputWord[]): string => {
+      const resultWordList: string[] = katakanaWords.map((katakanaWord: InputWord) => {
+        if (katakanaWord.value instanceof Array) {
+          const romajiStore: RomajiMap = wordsStore.find(romaji => katakanaWord.wordIndex === romaji.wordIndexInSentence)
+          return romajiStore ? romajiStore.katakanaText : ''
+        } else {
+          return (katakanaWord.value) as string
+        }
+      })
+      return resultWordList.join('')
+    }
+
+    /**
+     * 在<selectMenu/> 组件中点击回车确认选择平假名
+     * @param selectedKatakanaObj{RomajiMap} 选中的片假名对象
+     */
+    const onChooseWord = (selectedKatakanaObj: RomajiMap) => {
+      showSelectMenu.value = false
+      debugger
+      const reduplicateIndex = wordsStore.findIndex(x => x.wordIndexInSentence === selectedKatakanaObj.wordIndexInSentence)
+      // 把输入的值在 wordstore 里缓存起来
+      if (reduplicateIndex > -1) {
+        wordsStore.splice(reduplicateIndex, 1, selectedKatakanaObj)
+      } else {
+        wordsStore.push(selectedKatakanaObj)
+      }
+      outputStr.value = _getOutPutStr(inputWords)
+      nextTick(() => {
+        textareaDom.value.focus()
+      })
+    }
+
+    return {
+      inputStr,
+      outputStr,
+      textareaDom,
+      showSelectMenu,
+      katakanaToChoose,
+      doKeyup,
+      onChooseWord,
+    }
+  },
 }
+
 
 </script>
 
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped>
 
-.showWrapper {
+.output-wrapper {
   margin: 0 auto;
   width: 400px;
 }
