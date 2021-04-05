@@ -23,7 +23,6 @@ export default defineComponent({
 
     const doKeyup = (event) => {
       const key = event.key
-      // console.log({ key })
       switch (key) {
           // case 'ArrowUp': //
           //   break
