@@ -11,7 +11,7 @@
       </div>
       <div class="center">
         <p><label for="transform">请在下方输入要转换的罗马音并以空格间隔</label></p>
-        <textarea class="textarea" id="transform" ref="textareaDom" v-model="inputStr" @keyup="doKeyup"></textarea>
+        <textarea class="textarea" id="transform" ref="textareaDom" v-model="inputStr" @keyup="doKeyup" @paste="doPaste"></textarea>
         <SelectMenu v-if="showSelectMenu" :item="katakanaToChoose" @chooseWord="doChooseWord"/>
       </div>
       <div class="right">
@@ -132,11 +132,16 @@ export default {
       const keyCode = event.code
       console.log('输入的键:', keyCode)
       switch (keyCode) {
-          // case 'Space':
-          //   break
+        case '删除':
+          // todo 需要测试
+          break
         default:
           continueInput()
       }
+    }
+
+    const doPaste = () => {
+      continueInput()
     }
 
     const continueInput = () => {
@@ -190,7 +195,7 @@ export default {
         if (wordInSentence) {
           return romaji[wordInSentence.selectedIndex]
         } else {
-          // todo 这里要做高亮选择
+          // todo 插标, 这里要做高亮选择
           return `这是默认值${ HIRAGANA_DICT[romaji][0] }`
         }
       } else {
@@ -204,7 +209,7 @@ export default {
         debugger
         if (HIRAGANA_DICT[katakanaWord.key] instanceof Array) {
           const romajiStore: RomajiMap = wordsStore.find(romaji => katakanaWord.wordIndex === romaji.wordIndexInSentence)
-          return romajiStore?.katakanaText || '__??__'
+          return romajiStore?.katakanaText || `${ __ ?? __ }` // todo 处理数组          // todo 插标, 这里要做高亮选择
         } else {
           return (katakanaWord.value) as string
         }
@@ -238,6 +243,7 @@ export default {
       showSelectMenu,
       katakanaToChoose,
       doKeyup,
+      doPaste,
       doChooseWord,
     }
   },
