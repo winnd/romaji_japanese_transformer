@@ -1,8 +1,13 @@
 <template>
   <div class="hello">
-    <header>
-      <a href="http://www.earth.sinica.edu.tw/webearth-library.../files/JP.htm" target="_blank">五十音图参考表</a>
-    </header>
+    <div class="guide-wrapper">
+      <header class="guide--title">使用方法
+        <ul class="guide--box">
+          <li>1. 手动输入 <img src="../assets/input_example.gif" alt="演示"></li>
+          <li>2. 复制粘贴</li>
+        </ul>
+      </header>
+    </div>
 
     <section>
       <div class="left">
@@ -11,7 +16,8 @@
       </div>
       <div class="center">
         <p><label for="transform">请在下方输入要转换的罗马音并以空格间隔</label></p>
-        <textarea class="textarea" id="transform" ref="textareaDom" v-model="inputStr" @keyup="doKeyup" @paste="doPaste"></textarea>
+        <textarea class="textarea" id="transform" ref="textareaDom" v-model="inputStr" @keyup="doKeyup"
+                  @paste="doPaste"></textarea>
         <SelectMenu v-if="showSelectMenu" :item="katakanaToChoose" @chooseWord="doChooseWord"/>
       </div>
       <div class="right">
@@ -23,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import JP_DICT from './wordList.json'
+import JP_DICT from '../assets/wordMap.json'
 import SelectMenu from './SelectMenu.vue'
 import { nextTick, ref } from 'vue'
 import { InputWord, RomajiMap } from './type'
@@ -206,10 +212,10 @@ export default {
     // 获得可以输出的文本
     const _getOutPutStr = (katakanaWords: InputWord[]): string => {
       const resultWordList: string[] = katakanaWords.map((katakanaWord: InputWord) => {
-        debugger
+        // debugger
         if (HIRAGANA_DICT[katakanaWord.key] instanceof Array) {
           const romajiStore: RomajiMap = wordsStore.find(romaji => katakanaWord.wordIndex === romaji.wordIndexInSentence)
-          return romajiStore?.katakanaText || `${ __ ?? __ }` // todo 处理数组          // todo 插标, 这里要做高亮选择
+          return romajiStore?.katakanaText || `${ '__ ?? __' }` // todo 处理数组          // todo 插标, 这里要做高亮选择
         } else {
           return (katakanaWord.value) as string
         }
@@ -256,14 +262,59 @@ export default {
 <style scoped lang="scss">
 $text-height: 400px;
 
-header {
+.guide-wrapper {
+  position: relative;
+  display: inline-block;
 
+  header.guide--title {
+    cursor: pointer;
+    color: rgb(2, 121, 215);
+    display: inline-block;
+    padding: 0 5px;
+    &:hover {
+      .guide--box{
+        display: inline-block;
+      }
+    }
+  }
+
+  ul.guide--box {
+    position: absolute;
+    top: 100%;
+    left: calc(100% - 10px);
+    transform: translateX(-50%);
+    display: none;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    background: #eeeeee;
+    font-size: 14px;
+    cursor: initial;
+    li {
+      padding: 4px;
+      margin: 0 8px;
+      word-break: keep-all;
+      white-space: pre;
+      text-align: left;
+      display: flex;
+
+      &:first-child {
+        border-bottom: 1px solid #ccc;
+      }
+
+      img {
+        display: block;
+        max-width: initial;
+        width: 800px;
+      }
+    }
+  }
 }
 
 section {
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  margin-top: 20px;
 
   .left {
     height: 100%;
@@ -288,5 +339,7 @@ section {
 .textarea {
   width: 400px;
   height: $text-height;
+  outline: none;
+  border: 1px solid #eee;
 }
 </style>

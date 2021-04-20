@@ -1,9 +1,10 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes : [
         {path: '/', component: () => import('../components/HelloWorld.vue')},
+        {path: '/s', component: () => import('../components/SelectMenu.vue')},
     ],
 })
 

@@ -1,18 +1,21 @@
 <template>
   <div id="app">
-    <img :src="logo" alt="">
+    <img class="logo" :src="logo" alt="">
     <router-view/>
+    <img class="refer1" :src="refer" alt="">
   </div>
 </template>
 
 <script>
 import logo from './assets/logo.jpg'
+import refer from './assets/refer1.png'
 
 export default {
-  components: {logo},
+  components: { logo, refer },
   setup () {
     return {
       logo,
+      refer,
     }
   },
 }
@@ -27,11 +30,19 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 20px;
 
   img {
-    width: 300px;
-    height: 300px;
+    &.logo {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 20px;
+    }
+
+    &.refer1 {
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+    }
   }
 }
 
