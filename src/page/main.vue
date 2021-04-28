@@ -3,7 +3,7 @@
     <div class="guide-wrapper">
       <header class="guide--title">使用方法
         <ul class="guide--box">
-          <li>1. 手动输入 <img src="../assets/input_example.gif" alt="演示"></li>
+          <li>1. 手动输入 <img src="../assets/img/input_example.gif" alt="演示"></li>
           <li>2. 复制粘贴</li>
         </ul>
       </header>
@@ -29,100 +29,14 @@
 </template>
 
 <script lang="ts">
-import JP_DICT from '../assets/wordMap.json'
-import SelectMenu from './SelectMenu.vue'
+import JP_DICT from '../assets/data/wordMap.json'
+import SelectMenu from '../components/SelectMenu.vue'
 import { nextTick, ref } from 'vue'
-import { InputWord, RomajiMap } from './type'
+import { InputWord, RomajiMap } from '../components/type'
 
 export default {
   name: '输入区',
   components: { SelectMenu },
-  methods: {
-    async inputKey(event) {
-      const validated = await this.validateWord(event.data)
-      if (validated) {
-        let oldInputWord = this.inputWord.filter(x => x.wordIndexInArr !== undefined)      // 有index的要存下来
-
-        oldInputWord.map(x => {
-          if (this.inputWord[x.index]) {
-            this.inputWord[x.index].index = x.index
-            this.inputWord[x.index].wordIndexInArr = x.wordIndexInArr
-            this.inputWord[x.index].value = x.value
-          }
-        })
-
-        // var key         = textAreaStrArr[textAreaStrArr.length - 1]   // 最后一个word
-        this.inputWord.map((x, i) => {
-          if (x.index !== undefined && event.inputType !== 'deleteContentBackward') {
-            return
-          }
-          if (x.key !== '') {
-            switch (Object.prototype.toString.call(this.a[x.key])) {
-              case '[object String]':
-                x.value = this.a[x.key]
-                this.showRecommend = false
-                return x
-              case '[object Array]':
-                // var target = this.inputStr.split(' ')[x.index] === x.key
-                let target = x.index === undefined ? false : (oldInputWord[x.index].key === x.key)
-                if (x.index !== undefined && !target) {              // 已经改过了 并且删除了一部分
-                  delete x.index     // 归零
-                  x.value = x.key
-                } else if (x.index !== undefined && target) {    // 未做改动, 保持原样
-                } else {        // 新加的 初始化
-                  x.value = x.key    // 默认value
-                  x.index = i
-                  this.showRecommend = true
-                }
-                this.selectedIndex = x.index
-                return x
-              default:
-                if (x.index) {
-                  delete x.index
-                }
-                if (x.value) {
-                  delete x.value
-                }
-                if (x.wordIndexInArr !== undefined) {
-                  delete x.wordIndexInArr
-                }
-                x.value = this.a[x.key] === undefined ? x.key : x.key
-                this.showRecommend = false
-                return x
-            }
-          }
-        })
-      } else {
-        console.warn('不可识别的字符')
-      }
-    },
-    selectedText(value, index, wordIndexInArr, otherKey) {
-      if (value !== undefined) {
-        this.showRecommend = false
-        this.inputWord[index].wordIndexInArr = wordIndexInArr
-        this.inputWord[index].value = value[0]
-      } else {
-        // this.sentence[index].value = otherKey
-      }
-      this.$refs.textarea.focus()
-    },
-    validateWord(str) {
-      return new Promise((resolve) => {
-        switch (str) {
-          case  ' ' :
-            resolve(false)
-            return false
-          case 'deleteContentBackward':
-            resolve(false)
-            return false
-          default:
-            resolve(true)
-        }
-      }).catch(e => {
-        console.error(e)
-      })
-    },
-  },
   setup() {
     const { hiragana: HIRAGANA_DICT, katakana: KATAKANA_DICT } = JP_DICT    // HIRAGANA_DICT: 平假名字典；KATAKANA_DICT: 片假名字典
     const multipleChooseWord = Object.entries(HIRAGANA_DICT).filter(x => x[1] instanceof Array)   // 有多个选择的罗马音， 如：ji,shi
@@ -271,8 +185,9 @@ $text-height: 400px;
     color: rgb(2, 121, 215);
     display: inline-block;
     padding: 0 5px;
+
     &:hover {
-      .guide--box{
+      .guide--box {
         display: inline-block;
       }
     }
@@ -289,6 +204,7 @@ $text-height: 400px;
     background: #eeeeee;
     font-size: 14px;
     cursor: initial;
+
     li {
       padding: 4px;
       margin: 0 8px;
@@ -304,7 +220,7 @@ $text-height: 400px;
       img {
         display: block;
         max-width: initial;
-        width: 800px;
+        width: 900px;
       }
     }
   }
